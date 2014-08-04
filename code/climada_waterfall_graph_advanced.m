@@ -1,5 +1,3 @@
-%function climada_waterfall_graph_INCL_RAIN4(ELS1, ELS2, ELS3, ELS4, ELS5, ELS6, return_period, check_printplot)
-%return period and check print plot were moved to the beginning so its easyier to plot only one hazard
 function climada_waterfall_graph_advanced(return_period, check_printplot, ELS1, ELS2, ELS3, ELS4, ELS5, ELS6)
 % waterfall figure, expected loss for specified return period for 
 % - today,
@@ -33,6 +31,8 @@ function climada_waterfall_graph_advanced(return_period, check_printplot, ELS1, 
 % MODIFICATION HISTORY:
 % Lea Mueller, 20110622
 % Martin Heynen, 20120307
+% david.bresch@gmail.com, 20140804, GIT update
+%-
 
 global climada_global
 if ~climada_init_vars, return; end

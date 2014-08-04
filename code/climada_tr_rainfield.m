@@ -1,6 +1,4 @@
-
 function [res, tc_track_ori, centroids] = climada_tr_rainfield(tc_track, centroids, equal_timestep, silent_mode, check_plot,unit_)
-
 % TC rainfield calculation (rainsum)
 % NAME:
 %   climada_tc_rainfield
@@ -52,6 +50,7 @@ function [res, tc_track_ori, centroids] = climada_tr_rainfield(tc_track, centroi
 % MODIFICATION HISTORY:
 % Lea Mueller, 20110606
 % Martin Heyenn 20120503
+% david.bresch@gmail.com, 20140804, GIT update
 %-
 
 % if ~exist('tc_track'      ,'var'), return; end

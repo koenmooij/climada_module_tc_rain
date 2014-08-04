@@ -27,6 +27,7 @@ function climada_tr_rainsum_field_animation(tc_track, centroids,...
 %   (minimum 1 hour) for one specific storm track
 % MODIFICATION HISTORY:
 % Lea Mueller, 20110603
+% david.bresch@gmail.com, 20140804, GIT update
 %-
 
 

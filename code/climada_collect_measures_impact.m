@@ -43,6 +43,7 @@ function impact_collected=climada_collect_measures_impact(impact1,impact2)
 %   
 % MODIFICATION HISTORY:
 % Martin Heynen, 20120313
+% david.bresch@gmail.com, 20140804, GIT update
 %-
 
 

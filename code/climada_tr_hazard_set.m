@@ -51,6 +51,7 @@ function hazard  = climada_tr_hazard_set(tc_track, hazard_tr_set_file, centroids
 %           struct, this is often useful)
 % MODIFICATION HISTORY:
 % Lea Mueller, 20110722
+% david.bresch@gmail.com, 20140804, GIT update
 %-
 
 hazard = []; % init

@@ -16,7 +16,7 @@ function [rainrate] = climada_RCLIPER(fmaxwind_kn,...
 % INPUTS:
 %   fmaxwind_kn: maximum sustained wind at specific node (array) 
 %   inreach:     logical vector of centroids length, containing 1 if centroid
-%   is within 5° of node, otherwise 0 
+%   is within 5 deg of node, otherwise 0 
 %   Radius_km:   vector of centroids length, containing distance to node
 %   for every centroid
 % OPTIONAL INPUT PARAMETERS:
@@ -31,6 +31,7 @@ function [rainrate] = climada_RCLIPER(fmaxwind_kn,...
 % RESTRICTIONS:
 % MODIFICATION HISTORY:
 % Lea Mueller, 201106038
+% david.bresch@gmail.com, 20140804, GIT update
 %-
 
 rainrate = zeros(1,length(inreach));
