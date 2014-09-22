@@ -207,7 +207,7 @@ hazard.filename          = hazard_tr_set_file;
 hazard.reference_year    = hazard_reference_year;
 
 
-fprintf('saving hazard set as %s\n',hazard_tr_set_file);
+fprintf('saving TR rain hazard set as %s\n',hazard_tr_set_file);
 save(hazard_tr_set_file,'hazard')
 
 return
