@@ -45,7 +45,7 @@ function hazard  = climada_tr_hazard_set(tc_track, hazard_tr_set_file, centroids
 %       arr(event_i,centroid_i),sparse: the hazard intensity of event_i at
 %           centroid_i
 %       frequency(event_i): the frequency of each event
-%       matrix_density: the density of the sparse array hazard.arr
+%       matrix_density: the density of the sparse array hazard.intensity
 %       windfield_comment: a free comment, not in all hazard event sets
 %       filename: the filename of the hazard event set (if passed as a
 %           struct, this is often useful)
@@ -143,7 +143,7 @@ hazard.orig_event_count = 0; % init
 hazard.orig_event_flag  = zeros(1,hazard.event_count);
 
 % allocate the hazard array (sparse, to manage memory)
-hazard.arr              = spalloc(hazard.event_count,...
+hazard.intensity              = spalloc(hazard.event_count,...
                                   length(hazard.lon),...
                                   ceil(hazard.event_count*length(hazard.lon)*hazard_arr_density));
 
@@ -157,7 +157,7 @@ mod_step = 10; % first time estimate after 10 tracks, then every 100
 for track_i=1:length(tc_track)
     % calculate rainfield for every track, refined 1h timestep within this routine  
     res                             = climada_tr_rainfield(tc_track(track_i),centroids); 
-    hazard.arr(track_i,:)           = sparse(res.rainsum); % fill hazard array
+    hazard.intensity(track_i,:)           = sparse(res.rainsum); % fill hazard array
     hazard.orig_event_count         = hazard.orig_event_count + tc_track(track_i).orig_event_flag;
     hazard.orig_event_flag(track_i) = tc_track(track_i).orig_event_flag;
     
@@ -201,7 +201,7 @@ if isempty(hazard_tr_set_file) % local GUI
 end
 
 hazard.frequency         = ones(1,hazard.event_count)*event_frequency; % not transposed, just regular
-hazard.matrix_density    = nnz(hazard.arr)/numel(hazard.arr);
+hazard.matrix_density    = nnz(hazard.intensity)/numel(hazard.intensity);
 hazard.windfield_comment = msgstr;
 hazard.filename          = hazard_tr_set_file;
 hazard.reference_year    = hazard_reference_year;
