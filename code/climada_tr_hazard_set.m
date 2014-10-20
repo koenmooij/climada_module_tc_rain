@@ -1,4 +1,4 @@
-function hazard  = climada_tr_hazard_set(tc_track, hazard_tr_set_file, centroids)
+function hazard  = climada_tr_hazard_set(tc_track, hazard_set_file, centroids)
 % generate hazard rain set from tc_tracks
 % NAME:
 %   climada_tc_hazard_rain
@@ -66,7 +66,7 @@ if ~exist('hazard_tr_set_file','var'), hazard_tr_set_file = []; end
 if ~exist('centroids'         ,'var'), centroids          = []; end
 
 % PARAMETERS
-
+%
 check_plot = 0; % only for few tracks, please
 
 % since we store the hazard as sparse array, we need an a-priory estimation
@@ -77,7 +77,7 @@ hazard_arr_density    = 0.03; % 3% sparse hazard array density (estimated)
 hazard_reference_year = climada_global.present_reference_year; % default for present hazard is normally 2010
 
 
-%% prompt for tc_track if not given
+% prompt for tc_track if not given
 if isempty(tc_track) % local GUI
     tc_track = [climada_global.data_dir filesep 'tc_tracks' filesep '*.mat'];
     [filename, pathname] = uigetfile(tc_track, 'Select tc track:');
@@ -99,7 +99,19 @@ if ~isstruct(tc_track) % load, if filename given
 end
 
 
-%% prompt for centroids if not given
+% prompt for hazard_set_file if not given
+if isempty(hazard_tr_set_file) % local GUI
+    hazard_set_file = [climada_global.data_dir filesep 'hazards' filesep 'TRXX_hazard.mat'];
+    [filename, pathname] = uiputfile(hazard_set_file, 'Save TR hazard set as:');
+    if isequal(filename,0) || isequal(pathname,0)
+        return; % cancel
+    else
+        hazard_set_file = fullfile(pathname,filename);
+    end
+end
+
+
+% prompt for centroids if not given
 if isempty(centroids) % local GUI
     centroids = [climada_global.data_dir filesep 'system' filesep '*.mat'];
     [filename, pathname] = uigetfile(centroids, 'Select centroids:');
@@ -125,7 +137,8 @@ if ~isstruct(centroids) % load, if filename given
     load(centroids_file);
 end
 
-%%
+
+
 min_year   = tc_track  (1).yyyy  (1);
 max_year   = tc_track(end).yyyy(end);
 orig_years = max_year - min_year + 1;
@@ -188,18 +201,6 @@ fprintf('%s\n',msgstr);
 ens_size        = hazard.event_count/hazard.orig_event_count-1; % number of derived tracks per original one
 event_frequency = 1/(orig_years*(ens_size+1));
 
-
-% prompt for hazard_set_file if not given
-if isempty(hazard_tr_set_file) % local GUI
-    hazard_set_file = [climada_global.data_dir filesep 'hazards' filesep 'TRXX_hazard.mat'];
-    [filename, pathname] = uiputfile(hazard_set_file, 'Save TR hazard set as:');
-    if isequal(filename,0) || isequal(pathname,0)
-        return; % cancel
-    else
-        hazard_set_file = fullfile(pathname,filename);
-    end
-end
-
 hazard.frequency         = ones(1,hazard.event_count)*event_frequency; % not transposed, just regular
 hazard.matrix_density    = nnz(hazard.intensity)/numel(hazard.intensity);
 hazard.windfield_comment = msgstr;
@@ -207,7 +208,7 @@ hazard.filename          = hazard_tr_set_file;
 hazard.reference_year    = hazard_reference_year;
 
 
-fprintf('saving TR rain hazard set as %s\n',hazard_tr_set_file);
-save(hazard_tr_set_file,'hazard')
+fprintf('saving TR rain hazard set as %s\n',hazard_set_file);
+save(hazard_set_file,'hazard')
 
 return
