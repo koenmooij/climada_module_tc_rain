@@ -7,7 +7,7 @@ function hazard  = climada_tr_hazard_set(tc_track, hazard_set_file, centroids)
 %   previous: likely climada_random_walk
 %   next: diverse
 % CALLING SEQUENCE:
-%   hazard = climada_tr_hazard_set(tc_track,hazard_tr_set_file)
+%   hazard = climada_tr_hazard_set(tc_track,hazard_set_file)
 % EXAMPLE:
 %   hazard = climada_tr_hazard_set(tc_track)
 % INPUTS:
@@ -19,8 +19,8 @@ function hazard  = climada_tr_hazard_set(tc_track, hazard_set_file, centroids)
 %       > promted for if not given
 %   centroids: the variable grid centroids (see climada_centroids_read)
 %       a structure with
-%           Longitude(1,:): the longitudes   
-%           Latitude(1,:): the latitudes   
+%           Longitude(1,:): the longitudes
+%           Latitude(1,:): the latitudes
 %           centroid_ID(1,:): a unique ID for each centroid, simplest: 1:length(Longitude)
 %       or a file which contains the struct (saved after climada_centroids_read)
 %       if you select Cancel, a regular default grid is used, see hard-wired definition in code
@@ -62,7 +62,7 @@ if ~climada_init_vars,return;end
 
 % check inputs
 if ~exist('tc_track'          ,'var'), tc_track           = []; end
-if ~exist('hazard_tr_set_file','var'), hazard_tr_set_file = []; end
+if ~exist('hazard_set_file','var'), hazard_set_file = []; end
 if ~exist('centroids'         ,'var'), centroids          = []; end
 
 % PARAMETERS
@@ -100,7 +100,7 @@ end
 
 
 % prompt for hazard_set_file if not given
-if isempty(hazard_tr_set_file) % local GUI
+if isempty(hazard_set_file) % local GUI
     hazard_set_file = [climada_global.data_dir filesep 'hazards' filesep 'TRXX_hazard.mat'];
     [filename, pathname] = uiputfile(hazard_set_file, 'Save TR hazard set as:');
     if isequal(filename,0) || isequal(pathname,0)
@@ -121,7 +121,7 @@ if isempty(centroids) % local GUI
         for lon_i=-100:1:-50
             for lat_i=20:1:50
                 ii = ii+1;
-                centroids.Longitude(ii) = lon_i;        
+                centroids.Longitude(ii) = lon_i;
                 centroids.Latitude (ii) = lat_i;
             end
         end
@@ -157,20 +157,21 @@ hazard.orig_event_flag  = zeros(1,hazard.event_count);
 
 % allocate the hazard array (sparse, to manage memory)
 hazard.intensity              = spalloc(hazard.event_count,...
-                                  length(hazard.lon),...
-                                  ceil(hazard.event_count*length(hazard.lon)*hazard_arr_density));
+    length(hazard.lon),...
+    ceil(hazard.event_count*length(hazard.lon)*hazard_arr_density));
 
 t0       = clock;
-msgstr   = sprintf('processing %i tracks',length(tc_track));
+n_tracks=length(tc_track);
+msgstr   = sprintf('processing %i tracks',n_tracks);
 fprintf('%s (updating waitbar with estimation of time remaining every 100th track)\n',msgstr);
 h        = waitbar(0,msgstr);
 set(h,'Name','Hazard TR: tropical cyclones torrential rain');
 mod_step = 10; % first time estimate after 10 tracks, then every 100
 
-for track_i=1:length(tc_track)
-    % calculate rainfield for every track, refined 1h timestep within this routine  
-    res                             = climada_tr_rainfield(tc_track(track_i),centroids); 
-    hazard.intensity(track_i,:)           = sparse(res.rainsum); % fill hazard array
+for track_i=1:n_tracks
+    % calculate rainfield for every track, refined 1h timestep within this routine
+    res                             = climada_tr_rainfield(tc_track(track_i),centroids);
+    hazard.intensity(track_i,:)     = sparse(res.rainsum); % fill hazard array
     hazard.orig_event_count         = hazard.orig_event_count + tc_track(track_i).orig_event_flag;
     hazard.orig_event_flag(track_i) = tc_track(track_i).orig_event_flag;
     
@@ -183,19 +184,23 @@ for track_i=1:length(tc_track)
     % end
     
     if mod(track_i,mod_step)==0
-        mod_step          = 100;
-        t_elapsed_track   = etime(clock,t0)/track_i;
-        tracks_remaining  = length(tc_track)-track_i;
-        t_projected_track = t_elapsed_track*tracks_remaining;
-        msgstr            = sprintf('est. %i seconds left (%i tracks)',ceil(t_projected_track),tracks_remaining);
-        waitbar(track_i/length(tc_track),h,msgstr); % update waitbar
+        mod_step = 100;
+        t_elapsed = etime(clock,t0)/track_i;
+        n_remaining = n_tracks-track_i;
+        t_projected_sec = t_elapsed*n_remaining;
+        if t_projected_sec<60
+            msgstr = sprintf('est. %3.0f sec left (%i/%i events)',t_projected_sec, track_i, n_tracks);
+        else
+            msgstr = sprintf('est. %3.1f min left (%i/%i events)',t_projected_sec/60, track_i, n_tracks);
+        end
+        waitbar(track_i/n_tracks,h,msgstr); % update waitbar
     end
-
+    
 end %track_i
 close(h); % dispose waitbar
 
 t_elapsed = etime(clock,t0);
-msgstr    = sprintf('generating %i RAIN fields took %f sec (%f sec/event)\n',length(tc_track),t_elapsed,t_elapsed/length(tc_track));
+msgstr    = sprintf('generating %i RAIN fields took %f sec (%f sec/event)',n_tracks,t_elapsed,t_elapsed/n_tracks);
 fprintf('%s\n',msgstr);
 
 ens_size        = hazard.event_count/hazard.orig_event_count-1; % number of derived tracks per original one
@@ -204,7 +209,7 @@ event_frequency = 1/(orig_years*(ens_size+1));
 hazard.frequency         = ones(1,hazard.event_count)*event_frequency; % not transposed, just regular
 hazard.matrix_density    = nnz(hazard.intensity)/numel(hazard.intensity);
 hazard.windfield_comment = msgstr;
-hazard.filename          = hazard_tr_set_file;
+hazard.filename          = hazard_set_file;
 hazard.reference_year    = hazard_reference_year;
 
 

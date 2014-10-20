@@ -55,7 +55,7 @@ function [res, tc_track_ori, centroids] = climada_tr_rainfield(tc_track, centroi
 % Lea Mueller, 20110606
 % Martin Heyenn 20120503
 % david.bresch@gmail.com, 20140804, GIT update
-% david.bresch@gmail.com, 20141020, cleanup
+% david.bresch@gmail.com, 20141020, cleanup, inreach speedup
 %-
 
 global climada_global
@@ -70,6 +70,9 @@ if ~exist('unit_'         ,'var'), unit_          = 'mm'; end
 
 % PARAMETERS
 %
+% distance (in degree) around each node we process the rainfield
+dlon=5; % default=5
+dlat=dlon; % default=5
 
 % prompt for tc_track if not given
 if isempty(tc_track)
@@ -171,10 +174,19 @@ for i = 1:track_nodes_count
     
     % Define box where the CU's are in specific distance from the TC center
     %  inreach without on_land condition:
-    inreach = res.lon > (tc_track.lon(i) - 5) & ...
-        res.lon < (tc_track.lon(i) + 5) & ...
-        res.lat > (tc_track.lat(i) - 5) & ...
-        res.lat < (tc_track.lat(i) + 5);
+    
+    % check for track nodes within centroids_rect (using inpolygon)
+    %node_edges_x = [tc_track.lon(i)-dlon,tc_track.lon(i)-dlon,tc_track.lon(i)+dlon,tc_track.lon(i)+dlon,tc_track.lon(i)-dlon];
+    %node_edges_y = [tc_track.lat(i)-dlat,tc_track.lat(i)+dlat,tc_track.lat(i)+dlat,tc_track.lat(i)-dlat,tc_track.lat(i)-dlat];
+    %inreach = inpolygon(res.lon,res.lat,node_edges_x,node_edges_y);
+    
+    % check for track nodes within centroids_rect (using many logical)
+    %inreach = res.lon > (tc_track.lon(i) - 5) & ...
+    %      res.lon < (tc_track.lon(i) + 5) & ...
+    %      res.lat > (tc_track.lat(i) - 5) & ...
+    %      res.lat < (tc_track.lat(i) + 5);
+    
+    inreach=abs(res.lon-tc_track.lon(i))<dlon & abs(res.lat-tc_track.lat(i))<dlat;
     
     % Calculate distance for individual gridpoints from TC Center for windfield
     %  calculation/orographic rain & R-CLIPER - only calculated for the
@@ -192,7 +204,7 @@ for i = 1:track_nodes_count
         rainrate         = climada_RCLIPER(tc_track.MaxSustainedWind(i),...
             inreach,...
             fRadius_km);
-        res.rainrate(i,:)= sparse(rainrate);
+        %res.rainrate(i,:)= sparse(rainrate); % uses a LOT of time, unnecessary
         res.rainsum      = res.rainsum + rainrate;  %total sum of mm per wind storm
     end
     
@@ -201,7 +213,6 @@ end %Loop over all TC Nodes
 
 title_str = [tc_track.name ', ' datestr(tc_track.nodetime_mat(1))];
 if ~silent_mode, fprintf('%f secs for %s rainfall sum field\n',toc,deblank(title_str));end
-
 
 
 %--------------
@@ -310,8 +321,6 @@ if check_plot
         ['max:       ' int2str(round(gridded_max)), unitstr,' in ' datestr(pos_count/24,'dd HH') ' (days hours)'];...
         ['average:   ' num2str(gridded_max/pos_count,'%10.1f'),unitstr,' h^{-1}                           ']},'fontsize',8)
     
-    
-    
     choice = questdlg('print?','print');
     switch choice
         case 'Yes'
@@ -333,6 +342,3 @@ end
 
 
 return
-
-
-
