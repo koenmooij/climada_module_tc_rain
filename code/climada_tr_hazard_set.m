@@ -162,11 +162,17 @@ hazard.intensity              = spalloc(hazard.event_count,...
 
 t0       = clock;
 n_tracks=length(tc_track);
+
 msgstr   = sprintf('processing %i tracks',n_tracks);
-fprintf('%s (updating waitbar with estimation of time remaining every 100th track)\n',msgstr);
-h        = waitbar(0,msgstr);
-set(h,'Name','Hazard TR: tropical cyclones torrential rain');
-mod_step = 10; % first time estimate after 10 tracks, then every 100
+if climada_global.waitbar
+    fprintf('%s (updating waitbar with estimation of time remaining every 100th track)\n',msgstr);
+    h        = waitbar(0,msgstr);
+    set(h,'Name','Hazard TR: tropical cyclones torrential rain');
+    mod_step = 10; % first time estimate after 10 tracks, then every 100
+else
+    fprintf('%s (waitbar suppressed)\n',msgstr);
+    mod_step=n_tracks+10;
+end
 
 for track_i=1:n_tracks
     % calculate rainfield for every track, refined 1h timestep within this routine
@@ -197,7 +203,7 @@ for track_i=1:n_tracks
     end
     
 end %track_i
-close(h); % dispose waitbar
+if exist('h','var'),close(h);end % dispose waitbar
 
 t_elapsed = etime(clock,t0);
 msgstr    = sprintf('generating %i RAIN fields took %f sec (%f sec/event)',n_tracks,t_elapsed,t_elapsed/n_tracks);
