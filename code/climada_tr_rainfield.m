@@ -211,7 +211,7 @@ for i = 1:track_nodes_count
 end %Loop over all TC Nodes
 
 
-title_str = [tc_track.name ', ' datestr(tc_track.nodetime_mat(1))];
+title_str = [tc_track.name ', ' datestr(tc_track.datenum(1))];
 if ~silent_mode, fprintf('%f secs for %s rainfall sum field\n',toc,deblank(title_str));end
 
 
@@ -308,8 +308,8 @@ if check_plot
     ylabel('Latitude','fontsize',8)
     
     %title(title_str,'interpreter','none')
-    stormdate     = tc_track.nodetime_mat(1);
-    stormduration = tc_track.nodetime_mat(end) - tc_track.nodetime_mat(1);
+    stormdate     = tc_track.datenum(1);
+    stormduration = tc_track.datenum(end) - tc_track.datenum(1);
     stormname     = tc_track.name;
     stormname(stormname == '_') = ' ';
     

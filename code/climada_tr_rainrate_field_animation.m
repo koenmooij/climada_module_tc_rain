@@ -47,7 +47,7 @@ if isempty(aggregation)           , aggregation     = 6 ; end
 % rainrate for every hour (for every node from tc_track)
 % equal timestep within this routine. silent mode on
 [res tc_track centroids]  = climada_tr_rainfield(tc_track, centroids, 1, 1);
-stormdate = tc_track.nodetime_mat(1);
+stormdate = tc_track.datenum(1);
 stormname = tc_track.name;
 stormname(stormname == '_') = ' ';
 
