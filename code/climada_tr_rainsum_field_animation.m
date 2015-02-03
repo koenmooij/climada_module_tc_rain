@@ -79,9 +79,9 @@ pos_count                  = length(pos); %No. of hours with rain
 replay    = 1;
 
 %scale figure according to range of longitude and latitude
-scale  = max(centroids.Longitude) - min(centroids.Longitude);
-scale2 =(max(centroids.Longitude) - min(centroids.Longitude))/...
-        (min(max(centroids.Latitude),60)-max(min(centroids.Latitude),-50));
+scale  = max(centroids.lon) - min(centroids.lon);
+scale2 =(max(centroids.lon) - min(centroids.lon))/...
+        (min(max(centroids.lat),60)-max(min(centroids.lat),-50));
 height = 0.5;
 if height*scale2 > 1.2; height = 1.2/scale2; end
 fig = climada_figuresize(height,height*scale2+0.15);
@@ -93,11 +93,11 @@ hold on
 climada_plot_tc_track_stormcategory(tc_track);
 
 % centroids
-plot(centroids.Longitude, centroids.Latitude, '+r','MarkerSize',0.8,'linewidth',0.1)
+plot(centroids.lon, centroids.lat, '+r','MarkerSize',0.8,'linewidth',0.1)
   
 axis equal
-axis([min(centroids.Longitude)-scale/30  max(centroids.Longitude)+scale/30 ...
-      max(min(centroids.Latitude),-50)-scale/30  min(max(centroids.Latitude),60)+scale/30])
+axis([min(centroids.lon)-scale/30  max(centroids.lon)+scale/30 ...
+      max(min(centroids.lat),-50)-scale/30  min(max(centroids.lat),60)+scale/30])
 cmap = climada_colormap('TR');
 colormap(cmap)  
 gridded_max        = max(res.rainsum(:));
@@ -126,7 +126,7 @@ while replay == 1
             [c,h]                 = contourf(X, Y, full(gridded_VALUE),[0:50:gridded_max_round],'edgecolor','none');
             drawnow
             climada_plot_tc_track_stormcategory(tc_track);
-            plot(centroids.Longitude, centroids.Latitude, '+r','MarkerSize',0.8,'linewidth',0.1)
+            plot(centroids.lon, centroids.lat, '+r','MarkerSize',0.8,'linewidth',0.1)
             time_ = stormdate + (agg_i-1)*aggregation/24;
             title([stormname ', '  datestr(time_,'dd-mmm-yy HH PM')])
             if check_avi

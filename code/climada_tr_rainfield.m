@@ -34,8 +34,8 @@ function [res, tc_track_ori, centroids] = climada_tr_rainfield(tc_track, centroi
 %       NOTE: if empty, the user can also select a file with tc_track and will then
 %       get promted for a single track number to use (mainly useful for TESTs)
 %   centroids: a structure with the centroids information
-%       centroids.Latitude: the latitude of the centroids
-%       centroids.Longitude: the longitude of the centroids
+%       centroids.lat: the latitude of the centroids
+%       centroids.lon: the longitude of the centroids
 % OPTIONAL INPUT PARAMETERS:
 %   unit_: rainfall unit, either unit_='mm' (millimeters, default) or for inches unit_='in'
 %   equal_timestep: if set=1 (default), first interpolate the track to a common
@@ -160,10 +160,10 @@ tc_track.MaxSustainedWindUnit='kn'; % after conversion
 
 
 track_nodes_count = length(tc_track.lat);
-centroid_count    = length(centroids.Latitude);
+centroid_count    = length(centroids.lat);
 res.rainsum       = zeros(1,centroid_count);
-res.lat           = centroids.Latitude';
-res.lon           = centroids.Longitude';
+res.lat           = centroids.lat';
+res.lon           = centroids.lon';
 if isfield(centroids,'OBJECTID')   ,res.OBJECTID = centroids.OBJECTID;   end
 if isfield(centroids,'centroid_ID'),res.ID       = centroids.centroid_ID';end
 
@@ -223,9 +223,9 @@ if check_plot
     
     
     %scale figure according to range of longitude and latitude
-    scale  = max(centroids.Longitude) - min(centroids.Longitude);
-    scale2 =(max(centroids.Longitude) - min(centroids.Longitude))/...
-        (min(max(centroids.Latitude),60)-max(min(centroids.Latitude),-50));
+    scale  = max(centroids.lon) - min(centroids.lon);
+    scale2 =(max(centroids.lon) - min(centroids.lon))/...
+        (min(max(centroids.lat),60)-max(min(centroids.lat),-50));
     height = 0.5;
     if height*scale2 > 1.2; height = 1.2/scale2; end
     fig = climada_figuresize(height,height*scale2+0.15);
@@ -255,11 +255,11 @@ if check_plot
     
     
     %plot centroids?
-    plot(centroids.Longitude, centroids.Latitude, '+r','MarkerSize',0.8,'linewidth',0.1)
+    plot(centroids.lon, centroids.lat, '+r','MarkerSize',0.8,'linewidth',0.1)
     
     axis equal
-    axis([min(centroids.Longitude)-scale/30  max(centroids.Longitude)+scale/30 ...
-        max(min(centroids.Latitude),-50)-scale/30  min(max(centroids.Latitude),60)+scale/30])
+    axis([min(centroids.lon)-scale/30  max(centroids.lon)+scale/30 ...
+        max(min(centroids.lat),-50)-scale/30  min(max(centroids.lat),60)+scale/30])
     
     
     if log10(gridded_max)>2
