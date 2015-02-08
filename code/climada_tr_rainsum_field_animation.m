@@ -1,5 +1,4 @@
-function climada_tr_rainsum_field_animation(tc_track, centroids,...
-                                            aggregation,check_avi)                                        
+function climada_tr_rainsum_field_animation(tc_track, centroids, aggregation, check_avi)                                        
 % plot animation of rainrate field for a specific historical or
 % probabilistic storm
 % NAME:
@@ -51,7 +50,7 @@ stormduration = tc_track.datenum(end) - tc_track.datenum(1);
 stormname     = tc_track.name;
 stormname(stormname == '_') = ' ';
     
-% aggregate wind field for specific hours (unit remains mm/s)
+% aggregate rain field for specific hours (unit remains mm/s)
 [a b]             = size(res.rainrate);
 aggregation_count = floor(a/aggregation);
 if aggregation > 1
@@ -148,6 +147,7 @@ while replay == 1
         mov = close(mov);
         check_avi = [];
     end
+    replay = 0;
 
     %% ask for replay
     if isempty(check_avi) 

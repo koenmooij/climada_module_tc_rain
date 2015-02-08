@@ -204,7 +204,7 @@ for i = 1:track_nodes_count
         rainrate         = climada_RCLIPER(tc_track.MaxSustainedWind(i),...
             inreach,...
             fRadius_km);
-        %res.rainrate(i,:)= sparse(rainrate); % uses a LOT of time, unnecessary
+        res.rainrate(i,:)= sparse(rainrate); % uses a LOT of time, unnecessary
         res.rainsum      = res.rainsum + rainrate;  %total sum of mm per wind storm
     end
     
