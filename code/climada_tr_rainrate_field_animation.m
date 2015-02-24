@@ -1,4 +1,5 @@
-function climada_tr_rainrate_field_animation(tc_track, centroids,aggregation,check_avi)                        
+function climada_tr_rainrate_field_animation(tc_track, centroids,...
+                                             aggregation,check_avi)                        
 % plot animation of rainrate field for a specific historical or
 % probabilistic storm
 % NAME:
@@ -94,8 +95,8 @@ colormap(cmap)
 gridded_max_round     = 20;
 caxis([0 gridded_max_round])
 
-t = colorbar('YTick',[0:5:gridded_max_round]);
-set(get(t,'ylabel'),'String', 'Rain rate (mm h^{-1})','fontsize',8);
+ t = colorbar('YTick',[0:5:gridded_max_round]);
+ set(get(t,'ylabel'),'String', 'Rain rate (mm h^{-1})','fontsize',8);
   
 xlabel('Longitude','fontsize',8)
 ylabel('Latitude','fontsize',8)
@@ -153,7 +154,6 @@ while replay == 1
     set(get(t,'ylabel'),'String', 'Rainfall sum (mm)','fontsize',8);
     set(gca,'fontsize',8) 
 
-    replay = 0;
     %% ask for replay
     if isempty(check_avi) 
         choice = questdlg('Choose your next step?','Replay and or save as animation?','replay','save as animation.avi','exit','replay');

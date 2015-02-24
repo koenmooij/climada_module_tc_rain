@@ -1,4 +1,5 @@
-function climada_tr_rainsum_field_animation(tc_track, centroids, aggregation, check_avi)                                        
+function climada_tr_rainsum_field_animation(tc_track, centroids,...
+                                            aggregation,check_avi)                                        
 % plot animation of rainrate field for a specific historical or
 % probabilistic storm
 % NAME:
@@ -50,7 +51,7 @@ stormduration = tc_track.datenum(end) - tc_track.datenum(1);
 stormname     = tc_track.name;
 stormname(stormname == '_') = ' ';
     
-% aggregate rain field for specific hours (unit remains mm/s)
+% aggregate wind field for specific hours (unit remains mm/s)
 [a b]             = size(res.rainrate);
 aggregation_count = floor(a/aggregation);
 if aggregation > 1
@@ -92,7 +93,7 @@ hold on
 climada_plot_tc_track_stormcategory(tc_track);
 
 % centroids
-plot(centroids.lon, centroids.lat, '+r','MarkerSize',0.8,'linewidth',0.1)
+%plot(centroids.lon, centroids.lat, '+r','MarkerSize',0.8,'linewidth',0.1)
   
 axis equal
 axis([min(centroids.lon)-scale/30  max(centroids.lon)+scale/30 ...
@@ -100,15 +101,16 @@ axis([min(centroids.lon)-scale/30  max(centroids.lon)+scale/30 ...
 cmap = climada_colormap('TR');
 colormap(cmap)  
 gridded_max        = max(res.rainsum(:));
-gridded_max_round  = 700;
+gridded_max_round  = 120; %700;
 caxis([0 gridded_max_round])
 
-% colorbar
-colorbartick           = [0:100:gridded_max_round round(gridded_max)];
-colorbarticklabel      = num2cell(colorbartick);
-colorbarticklabel{end} = [num2str(gridded_max,'%10.2f') 'max'];
-colorbarticklabel{end} = [int2str(gridded_max)          'max'];
-t = colorbar('YTick',colorbartick,'yticklabel',colorbarticklabel);
+% % colorbar
+% colorbartick           = [0:100:gridded_max_round round(gridded_max)];
+% colorbarticklabel      = num2cell(colorbartick);
+% colorbarticklabel{end} = [num2str(gridded_max,'%10.2f') 'max'];
+% colorbarticklabel{end} = [int2str(gridded_max)          'max'];
+% t = colorbar('YTick',colorbartick,'yticklabel',colorbarticklabel);
+t = colorbar;
 set(get(t,'ylabel'),'String', 'Rainfall sum (mm)','fontsize',8);
 
 xlabel('Longitude','fontsize',8)
@@ -125,7 +127,7 @@ while replay == 1
             [c,h]                 = contourf(X, Y, full(gridded_VALUE),[0:50:gridded_max_round],'edgecolor','none');
             drawnow
             climada_plot_tc_track_stormcategory(tc_track);
-            plot(centroids.lon, centroids.lat, '+r','MarkerSize',0.8,'linewidth',0.1)
+            %plot(centroids.lon, centroids.lat, '+r','MarkerSize',0.8,'linewidth',0.1)
             time_ = stormdate + (agg_i-1)*aggregation/24;
             title([stormname ', '  datestr(time_,'dd-mmm-yy HH PM')])
             if check_avi
@@ -143,11 +145,11 @@ while replay == 1
             end        
         end
     end
+    replay = 0;
     if check_avi
         mov = close(mov);
         check_avi = [];
     end
-    replay = 0;
 
     %% ask for replay
     if isempty(check_avi) 
